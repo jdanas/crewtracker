@@ -1,5 +1,5 @@
 // src/components/health/HealthDashboard.tsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Heart, Activity, Moon } from 'lucide-react';
 import HealthMetricCard from './HealthMetricCard';
@@ -18,6 +18,17 @@ export default function HealthDashboard() {
   if (!healthData) {
     return <div>Loading...</div>;
   }
+
+  const chartData: HealthData[] = [
+    {
+      time: "2023-10-01T10:00:00Z",
+      heartRate: 72,
+      steps: 5000,
+      sleepHours: 8,
+      lastUpdated: new Date("2023-10-01T10:00:00Z"),
+    },
+    // Add more data points as needed
+  ];
 
   return (
     <div className="p-6 space-y-6">
@@ -40,7 +51,7 @@ export default function HealthDashboard() {
         />
       </div>
       <div className="mt-8">
-        <HealthChart data={healthData} />
+        <HealthChart data={chartData} />
       </div>
     </div>
   );

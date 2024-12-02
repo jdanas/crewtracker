@@ -1,4 +1,5 @@
 export interface HealthData {
+  time: string;
   heartRate: number;
   steps: number;
   sleepHours: number;
