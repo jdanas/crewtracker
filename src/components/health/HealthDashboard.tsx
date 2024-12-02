@@ -27,6 +27,34 @@ export default function HealthDashboard() {
       sleepHours: 8,
       lastUpdated: new Date("2023-10-01T10:00:00Z"),
     },
+    {
+      time: "2023-10-01T11:00:00Z",
+      heartRate: 75,
+      steps: 5200,
+      sleepHours: 7.5,
+      lastUpdated: new Date("2023-10-01T11:00:00Z"),
+    },
+    {
+      time: "2023-10-01T12:00:00Z",
+      heartRate: 78,
+      steps: 5400,
+      sleepHours: 7,
+      lastUpdated: new Date("2023-10-01T12:00:00Z"),
+    },
+    {
+      time: "2023-10-01T13:00:00Z",
+      heartRate: 80,
+      steps: 5600,
+      sleepHours: 6.5,
+      lastUpdated: new Date("2023-10-01T13:00:00Z"),
+    },
+    {
+      time: "2023-10-01T14:00:00Z",
+      heartRate: 82,
+      steps: 5800,
+      sleepHours: 6,
+      lastUpdated: new Date("2023-10-01T14:00:00Z"),
+    },
     // Add more data points as needed
   ];
 
