@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Supabase configuration
-const supabaseUrl = process.env.SUPABASE_URL || 'https://ifujxdwughmnvaxxbsac.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmdWp4ZHd1Z2htbnZheHhic2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMxOTYzMzksImV4cCI6MjA0ODc3MjMzOX0.l33EfvdZwMkfKYw-EEQXzRYMuNWl_sCGRa2cL5MVaY0';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
 console.log('Supabase URL:', supabaseUrl);
 console.log('Supabase Key:', supabaseKey);
