@@ -1,4 +1,8 @@
 // crewtracker-backend/src/index.ts
+import * as dotenv from 'dotenv';
+// Load env variables before other imports
+dotenv.config();
+// crewtracker-backend/src/index.ts
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
