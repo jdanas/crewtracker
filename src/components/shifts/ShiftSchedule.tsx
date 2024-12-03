@@ -3,10 +3,18 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Clock, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
-import { Shift } from '../../types';
+
+// Update interface to match database response
+interface ShiftResponse {
+  id: number;
+  starttime: string; // lowercase to match DB
+  endtime: string;   // lowercase to match DB
+  crewmemberid: string;
+  role: string;
+}
 
 export default function ShiftSchedule() {
-  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [shifts, setShifts] = useState<ShiftResponse[]>([]);
 
   useEffect(() => {
     const fetchShifts = async () => {
@@ -30,10 +38,10 @@ export default function ShiftSchedule() {
       </div>
       <div className="space-y-4">
         {shifts.map((shift) => {
-          const startTime = new Date(shift.startTime);
-          const endTime = new Date(shift.endTime);
+          // Use lowercase property names
+          const startTime = new Date(shift.starttime);
+          const endTime = new Date(shift.endtime);
 
-          // Check if the date values are valid
           if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
             console.error('Invalid date value:', shift);
             return null;
