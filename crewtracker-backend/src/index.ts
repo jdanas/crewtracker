@@ -1,6 +1,8 @@
+// crewtracker-backend/src/index.ts
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
 
 const app = express();
 const port = 3000;
@@ -8,43 +10,67 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Mock data
-const healthData = {
-  heartRate: 72,
-  steps: 8432,
-  sleepHours: 7.5,
-  lastUpdated: new Date(),
-};
+// Supabase configuration
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'your-supabase-url';
+const supabaseKey = process.env.VITE_SUPABASE_KEY || 'your-supabase-key';
 
-const shifts = [
-  {
-    id: '1',
-    startTime: new Date('2024-03-10T08:00:00'),
-    endTime: new Date('2024-03-10T20:00:00'),
-    crewMemberId: '123',
-    role: 'Bridge Officer',
-  },
-  {
-    id: '2',
-    startTime: new Date('2024-03-10T20:00:00'),
-    endTime: new Date('2024-03-11T08:00:00'),
-    crewMemberId: '124',
-    role: 'Engineer',
-  },
-];
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase URL or Key is missing');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Routes
-app.get('/health-data', (req, res) => {
-  res.json(healthData);
+app.get('/health-data', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('health_data')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching health data:', error);
+    res.status(500).json({ error: 'Failed to fetch health data'});
+  }
 });
 
-app.get('/shifts', (req, res) => {
-  res.json(shifts);
+app.get('/shifts', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('shifts')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching shifts:', error);
+    res.status(500).json({ error: 'Failed to fetch shifts'});
+  }
 });
 
-app.post('/feedback', (req, res) => {
-  console.log('Feedback received:', req.body);
-  res.status(201).send('Feedback submitted');
+app.post('/feedback', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('feedback')
+      .insert([req.body]);
+
+    if (error) {
+      throw error;
+    }
+
+    res.status(201).json(data);
+  } catch (error) {
+    console.error('Error inserting feedback:', error);
+    res.status(500).json({ error: 'Failed to insert feedback'});
+  }
 });
 
 app.listen(port, () => {
