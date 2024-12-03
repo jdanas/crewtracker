@@ -1,5 +1,5 @@
 // src/components/health/HealthDashboard.tsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Heart, Activity, Moon } from 'lucide-react';
 import HealthMetricCard from './HealthMetricCard';
@@ -7,56 +7,25 @@ import HealthChart from './HealthChart';
 import { HealthData } from '../../types';
 
 export default function HealthDashboard() {
-  const [healthData, setHealthData] = useState<HealthData | null>(null);
+  const [healthData, setHealthData] = useState<HealthData[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/health-data')
-      .then(response => setHealthData(response.data))
-      .catch(error => console.error('Error fetching health data:', error));
+    const fetchHealthData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/health-data');
+        console.log('Health data fetched:', response.data);
+        setHealthData(response.data);
+      } catch (error) {
+        console.error('Error fetching health data:', error);
+      }
+    };
+
+    fetchHealthData();
   }, []);
 
-  if (!healthData) {
+  if (healthData.length === 0) {
     return <div>Loading...</div>;
   }
-
-  const chartData: HealthData[] = [
-    {
-      time: "2023-10-01T10:00:00Z",
-      heartRate: 72,
-      steps: 5000,
-      sleepHours: 8,
-      lastUpdated: new Date("2023-10-01T10:00:00Z"),
-    },
-    {
-      time: "2023-10-01T11:00:00Z",
-      heartRate: 75,
-      steps: 5200,
-      sleepHours: 7.5,
-      lastUpdated: new Date("2023-10-01T11:00:00Z"),
-    },
-    {
-      time: "2023-10-01T12:00:00Z",
-      heartRate: 78,
-      steps: 5400,
-      sleepHours: 7,
-      lastUpdated: new Date("2023-10-01T12:00:00Z"),
-    },
-    {
-      time: "2023-10-01T13:00:00Z",
-      heartRate: 80,
-      steps: 5600,
-      sleepHours: 6.5,
-      lastUpdated: new Date("2023-10-01T13:00:00Z"),
-    },
-    {
-      time: "2023-10-01T14:00:00Z",
-      heartRate: 82,
-      steps: 5800,
-      sleepHours: 6,
-      lastUpdated: new Date("2023-10-01T14:00:00Z"),
-    },
-    // Add more data points as needed
-  ];
 
   return (
     <div className="p-6 space-y-6">
@@ -65,21 +34,21 @@ export default function HealthDashboard() {
         <HealthMetricCard
           icon={<Heart className="w-6 h-6 text-red-500" />}
           title="Heart Rate"
-          value={`${healthData.heartRate} BPM`}
+          value={`${healthData[0].heartRate} BPM`}
         />
         <HealthMetricCard
           icon={<Activity className="w-6 h-6 text-green-500" />}
           title="Steps"
-          value={healthData.steps.toLocaleString()}
+          value={healthData[0].steps.toLocaleString()}
         />
         <HealthMetricCard
           icon={<Moon className="w-6 h-6 text-blue-500" />}
           title="Sleep"
-          value={`${healthData.sleepHours} hours`}
+          value={`${healthData[0].sleepHours} hours`}
         />
       </div>
       <div className="mt-8">
-        <HealthChart data={chartData} />
+        <HealthChart data={healthData} />
       </div>
     </div>
   );

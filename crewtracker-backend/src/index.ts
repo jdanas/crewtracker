@@ -11,9 +11,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Supabase configuration
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'your-supabase-url';
-const supabaseKey = process.env.VITE_SUPABASE_KEY || 'your-supabase-key';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://ifujxdwughmnvaxxbsac.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmdWp4ZHd1Z2htbnZheHhic2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMxOTYzMzksImV4cCI6MjA0ODc3MjMzOX0.l33EfvdZwMkfKYw-EEQXzRYMuNWl_sCGRa2cL5MVaY0';
 
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Key:', supabaseKey);
 if (!supabaseUrl || !supabaseKey) {
   console.error('Supabase URL or Key is missing');
   process.exit(1);
@@ -76,3 +78,4 @@ app.post('/feedback', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
