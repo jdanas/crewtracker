@@ -5,9 +5,11 @@ import MentalHealthSurvey from './components/mental/MentalHealthSurvey';
 import ShiftSchedule from './components/shifts/ShiftSchedule';
 import AnonymousFeedback from './components/feedback/AnonymousFeedback';
 import ErrorBoundary from './components/errorboundary/ErrorBoundary';
+import AuthContext from './contexts/AuthContext';
 
 function App() {
   return (
+    <AuthContext>
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-100">
         <nav className="bg-blue-600 text-white shadow-lg">
@@ -32,6 +34,7 @@ function App() {
         </main>
       </div>
     </ErrorBoundary>
+    </AuthContext>
   );
 }
 

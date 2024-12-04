@@ -27,21 +27,52 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Routes
+app.post('/auth/register', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Failed to register' });
+  }
+});
+
+app.post('/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+// Update health data route to include user_id
 app.get('/health-data', async (req, res) => {
   try {
+    const userId = req.headers['user-id'];
     const { data, error } = await supabase
       .from('health_data')
-      .select('*');
+      .select('*')
+      .eq('user_id', userId);
 
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     res.json(data);
   } catch (error) {
     console.error('Error fetching health data:', error);
-    res.status(500).json({ error: 'Failed to fetch health data'});
+    res.status(500).json({ error: 'Failed to fetch health data' });
   }
 });
 
