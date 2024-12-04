@@ -30,13 +30,20 @@ export default function HealthDashboard() {
           }
         });
         
-        console.log('Health data response:', response);
+        console.log('Raw response data:', response.data);
         
-        if (!response.data) {
-          throw new Error('No data received from server');
-        }
+        // Transform the data to match HealthData interface
+        const formattedData = Array.isArray(response.data) ? response.data.map(item => ({
+          time: item.time,
+          heartRate: item.heartrate, // Transform from heartrate to heartRate
+          steps: item.steps,
+          sleepHours: item.sleephours, // Transform from sleephours to sleepHours
+          lastUpdated: new Date(item.lastupdated) // Transform from lastupdated to lastUpdated
+        })) : [];
   
-        setHealthData(Array.isArray(response.data) ? response.data : [response.data]);
+        console.log('Formatted health data:', formattedData);
+        
+        setHealthData(formattedData);
       } catch (error: any) {
         console.error('Error fetching health data:', error);
         setError(error.response?.data?.error || error.message || 'Failed to load health data');
@@ -47,6 +54,11 @@ export default function HealthDashboard() {
   
     fetchHealthData();
   }, [user]);
+  
+  // Debug render cycle
+  console.log('Current healthData state:', healthData);
+  console.log('Current loading state:', loading);
+  console.log('Current error state:', error);
 
   if (loading) {
     return <div className="p-6">Loading health data...</div>;
@@ -56,9 +68,16 @@ export default function HealthDashboard() {
     return <div className="p-6 text-red-500">{error}</div>;
   }
 
-  if (healthData.length === 0) {
+  if (!healthData || healthData.length === 0) {
     return <div className="p-6">No health data available</div>;
   }
+
+  // Debug data being used for rendering
+  console.log('Rendering with data:', {
+    heartRate: healthData[0]?.heartRate,
+    steps: healthData[0]?.steps,
+    sleepHours: healthData[0]?.sleepHours
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -67,17 +86,17 @@ export default function HealthDashboard() {
         <HealthMetricCard
           icon={<Heart className="w-6 h-6 text-red-500" />}
           title="Heart Rate"
-          value={`${healthData[0].heartRate} BPM`}
+          value={`${healthData[0]?.heartRate || 0} BPM`}
         />
         <HealthMetricCard
           icon={<Activity className="w-6 h-6 text-green-500" />}
           title="Steps"
-          value={healthData[0].steps.toLocaleString()}
+          value={(healthData[0]?.steps || 0).toLocaleString()}
         />
         <HealthMetricCard
           icon={<Moon className="w-6 h-6 text-blue-500" />}
           title="Sleep"
-          value={`${healthData[0].sleepHours} hours`}
+          value={`${healthData[0]?.sleepHours || 0} hours`}
         />
       </div>
       <div className="mt-8">
