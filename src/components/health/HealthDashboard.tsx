@@ -1,30 +1,51 @@
 // src/components/health/HealthDashboard.tsx
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Heart, Activity, Moon } from 'lucide-react';
 import HealthMetricCard from './HealthMetricCard';
 import HealthChart from './HealthChart';
 import { HealthData } from '../../types';
+import axiosInstance from '../../utils/axios';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function HealthDashboard() {
   const [healthData, setHealthData] = useState<HealthData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchHealthData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/health-data');
+        const response = await axiosInstance.get('/health-data', {
+          headers: {
+            'user-id': user?.id
+          }
+        });
         console.log('Health data fetched:', response.data);
-        setHealthData(response.data);
+        setHealthData(Array.isArray(response.data) ? response.data : [response.data]);
       } catch (error) {
         console.error('Error fetching health data:', error);
+        setError('Failed to load health data');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHealthData();
-  }, []);
+    if (user?.id) {
+      fetchHealthData();
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div className="p-6">Loading health data...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-500">{error}</div>;
+  }
 
   if (healthData.length === 0) {
-    return <div>Loading...</div>;
+    return <div className="p-6">No health data available</div>;
   }
 
   return (

@@ -63,6 +63,7 @@ app.post('/auth/login', async (req, res) => {
 app.get('/health-data', async (req, res) => {
   try {
     const userId = req.headers['user-id'];
+
     const { data, error } = await supabase
       .from('health_data')
       .select('*')
