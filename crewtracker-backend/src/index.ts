@@ -43,6 +43,18 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
+app.post('/auth/logout', async (req, res) => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ error: 'Failed to logout' });
+  }
+});
+
+// Modify login endpoint to include session expiry
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -52,7 +64,14 @@ app.post('/auth/login', async (req, res) => {
     });
 
     if (error) throw error;
-    res.json(data);
+
+    // Add session expiry (5 minutes from now)
+    const session = {
+      ...data.session,
+      expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+    };
+
+    res.json({ user: data.user, session });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Failed to login' });

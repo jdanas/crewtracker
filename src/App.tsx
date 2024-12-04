@@ -1,6 +1,6 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Ship } from 'lucide-react';
+import { Ship, LogOut } from 'lucide-react';
 import HealthDashboard from './components/health/HealthDashboard';
 import MentalHealthSurvey from './components/mental/MentalHealthSurvey';
 import ShiftSchedule from './components/shifts/ShiftSchedule';
@@ -11,8 +11,18 @@ import LoginPage from './components/auth/LoginPage';
 
 // Protected Route Component
 const ProtectedLayout = () => {
-  const { user } = useAuth();
-  
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Redirect to login page after successful logout
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+
   if (!user) {
     return <Navigate to="/login" />;
   }
@@ -21,9 +31,12 @@ const ProtectedLayout = () => {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-blue-600 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-3">
-            <Ship className="w-8 h-8" />
-            <h1 className="text-2xl font-bold">Crew Wellbeing Tracker</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Ship className="w-8 h-8" />
+              <h1 className="text-2xl font-bold">Crew Wellbeing Tracker</h1>
+            </div>
+            <LogOut className="w-6 h-6 cursor-pointer" onClick={handleLogout} />
           </div>
         </div>
       </nav>
@@ -59,4 +72,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

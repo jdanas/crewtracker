@@ -6,11 +6,23 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (user?.access_token) {
-    config.headers.Authorization = `Bearer ${user.access_token}`;
+  const session = JSON.parse(localStorage.getItem('session') || '{}');
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
   }
   return config;
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('session');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;
