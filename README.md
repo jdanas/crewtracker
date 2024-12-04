@@ -27,7 +27,7 @@ CrewTracker is a project to manage and track crew activities efficiently. This a
 
 1. Start the application:
     ```sh
-    npm start
+    npm run dev
     ```
 2. Open your browser and navigate to `http://localhost:3000`
 
