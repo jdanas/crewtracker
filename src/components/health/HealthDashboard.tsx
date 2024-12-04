@@ -16,24 +16,36 @@ export default function HealthDashboard() {
   useEffect(() => {
     const fetchHealthData = async () => {
       try {
+        if (!user?.id) {
+          setError('No user ID available');
+          setLoading(false);
+          return;
+        }
+  
+        console.log('Fetching health data for user:', user.id);
+        
         const response = await axiosInstance.get('/health-data', {
           headers: {
-            'user-id': user?.id
+            'user-id': user.id
           }
         });
-        console.log('Health data fetched:', response.data);
+        
+        console.log('Health data response:', response);
+        
+        if (!response.data) {
+          throw new Error('No data received from server');
+        }
+  
         setHealthData(Array.isArray(response.data) ? response.data : [response.data]);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching health data:', error);
-        setError('Failed to load health data');
+        setError(error.response?.data?.error || error.message || 'Failed to load health data');
       } finally {
         setLoading(false);
       }
     };
-
-    if (user?.id) {
-      fetchHealthData();
-    }
+  
+    fetchHealthData();
   }, [user]);
 
   if (loading) {

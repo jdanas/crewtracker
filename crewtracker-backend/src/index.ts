@@ -82,6 +82,8 @@ app.post('/auth/login', async (req, res) => {
 app.get('/health-data', async (req, res) => {
   try {
     const userId = req.headers['user-id'];
+    console.log('Fetching health data for user:', userId);
+
 
     const { data, error } = await supabase
       .from('health_data')
@@ -89,6 +91,7 @@ app.get('/health-data', async (req, res) => {
       .eq('user_id', userId);
 
     if (error) throw error;
+
     res.json(data);
   } catch (error) {
     console.error('Error fetching health data:', error);
