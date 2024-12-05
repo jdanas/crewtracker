@@ -44,9 +44,9 @@ export default function HealthDashboard() {
         console.log('Formatted health data:', formattedData);
         
         setHealthData(formattedData);
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching health data:', error);
-        setError(error.response?.data?.error || error.message || 'Failed to load health data');
+        setError('Failed to fetch health data');
       } finally {
         setLoading(false);
       }
