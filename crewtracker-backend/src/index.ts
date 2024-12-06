@@ -23,10 +23,12 @@ interface AuthenticatedRequest extends Request {
 const app = express();
 const port = 3000;
 
-// Middleware
+// crewtracker-backend/src/index.ts
 app.use(cors({
   origin: 'http://localhost:5173',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 app.use(sessionMiddleware);
