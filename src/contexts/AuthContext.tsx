@@ -1,97 +1,92 @@
 // src/contexts/AuthContext.tsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+interface User {
+  id: string;
+  email: string;
+}
+
 interface AuthContextType {
-  user: any;
+  user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post('http://localhost:3000/auth/login', {
-      email,
-      password
-    });
-    
-    const { user, session } = response.data;
-    setUser(user);
-    localStorage.setItem('session', JSON.stringify(session));
-    localStorage.setItem('user', JSON.stringify(user));
-  };
-
-  const register = async (email: string, password: string) => {
-    const response = await axios.post('http://localhost:3000/auth/register', {
-      email,
-      password
-    });
-    
-    const { user, session } = response.data;
-    setUser(user);
-    localStorage.setItem('session', JSON.stringify(session));
-    localStorage.setItem('user', JSON.stringify(user));
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/auth/login',
+        { email, password },
+        { withCredentials: true }
+      );
+      setUser(response.data.user);
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await axios.post('http://localhost:3000/auth/logout');
-    setUser(null);
-    localStorage.removeItem('session');
-    localStorage.removeItem('user');
-    navigate('/login');
+    try {
+      await axios.post('http://localhost:3000/auth/logout', {}, { withCredentials: true });
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error;
+    }
   };
 
-  // Check session on mount and after refresh
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const session = localStorage.getItem('session');
-        const storedUser = localStorage.getItem('user');
+        const response = await axios.get('http://localhost:3000/check-session', {
+          withCredentials: true
+        });
         
-        if (!session || !storedUser) {
-          return;
+        if (response.data.user) {
+          setUser(response.data.user);
         }
-
-        const sessionData = JSON.parse(session);
-        const userData = JSON.parse(storedUser);
-
-        // Check if session is expired (5 minutes timeout)
-        const expiresAt = new Date(sessionData.expires_at).getTime();
-        const now = new Date().getTime();
-        
-        if (now > expiresAt) {
-          await logout();
-          return;
-        }
-
-        setUser(userData);
       } catch (error) {
         console.error('Session check failed:', error);
-        await logout();
+        navigate('/login');
+      } finally {
+        setLoading(false);
       }
     };
 
     checkSession();
-  }, []);
+  }, [navigate]);
+
+  const value = {
+    user,
+    loading,
+    login,
+    logout
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}

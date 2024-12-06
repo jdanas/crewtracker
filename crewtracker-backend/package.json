@@ -13,13 +13,17 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.46.2",
     "body-parser": "^1.20.3",
+    "connect-redis": "^7.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.6",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "express-session": "^1.17.3",
+    "redis": "^4.6.7"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
     "@types/node": "^22.10.1",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
